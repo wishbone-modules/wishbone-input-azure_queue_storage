@@ -1,18 +1,29 @@
 language: python
 python:
-  - "3.6"
+- '3.6'
 install:
-  - python setup.py install
-  - pip install azure-storage-queue --upgrade --force-reinstall
-  - pip install pytest
+- python setup.py install
+- pip install azure-storage-queue --upgrade --force-reinstall
+- pip install pytest
 script:
-  - pytest -s -v tests/default.py
+- pytest -s -v tests/default.py
 after_success:
-  - docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-  - export REPO=smetj/wishbone-input-azure_queue_storage
-  - export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-  - docker build -f Dockerfile -t $REPO:$TRAVIS_COMMIT --build-arg branch=$TRAVIS_BRANCH .
-  - docker tag $REPO:$TRAVIS_COMMIT $REPO:$TAG
-  - docker tag $REPO:$TRAVIS_COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
-  - docker push $REPO:$TAG
-  - docker push $REPO:$TRAVIS_COMMIT
+- docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+- export REPO=smetj/wishbone-input-azure_queue_storage
+- export TAG=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH
+  ; fi`
+- docker build -f Dockerfile -t $REPO:$TRAVIS_COMMIT --build-arg branch=$TRAVIS_BRANCH
+  .
+- docker tag $REPO:$TRAVIS_COMMIT $REPO:$TAG
+- docker tag $REPO:$TRAVIS_COMMIT $REPO:travis-$TRAVIS_BUILD_NUMBER
+- docker push $REPO:$TAG
+- docker push $REPO:$TRAVIS_COMMIT
+notifications:
+  webhooks:
+    urls:
+    - secure: QF3f4UgN9/XquAyn5j5B4qvu4IrZmJvghAGtDbGfPuWxpP7ZD/DkuGrPDiwu3rt5jB7zvIoAegnHFEqPPHsQP+csKEMchgDKHvtOTNT6eOsuvXnimiZb8VyVuZu6QuYRz4JeTFqAkKgJlJ8e+7CRLDnT76ufJgYC/IRUjwC8Rm4chEphgwnsP1TeW4jR95ko9pkq8lLRNG0GSH+Y2yaB0TedifodfYAFStHpfcq7Jqi31x+9+bRZeALGONDnF2+Wey6wc6rfNBmpdGTuLTIik/FcJfMUHhEd57vjENQFlpABLNFchNu3NPHs5qjfH8C0YapGCG94Wekb/13pS3un85dtnbQFnLiAeyWpeBqVBw9tTf5DjXg+uCnVh+xGgoG8zoMlkZej6xgPyYTJQ8EQIzdvSOlQIKpowwkwS0NL5OzzHkngEI/5e14hRZGMulTmsJeADDZEuk1aDhpvz+UGuailGU8+L0jwnksBHWCqFSuYa5pynLiPjcXIQg14ZMy7lmUUqhzU5dZvbydJmgTdl+5QmuVzT1dErnmli616K0ko29BVa3su6flBFe6VWg8BHhdd2FU99GAu2atT5eRWog/9LyZrLIIANIgrIJrr2VvPHmVAMD7jB6bIzkN5Hyl7YTmGTU96e66f+3IMq/oZfuNKqWH67igUgSKjvNZhbb8=
+    on_success: always
+    on_failure: always
+    on_start: change
+    on_cancel: always
+    on_error: always
